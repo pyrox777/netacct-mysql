@@ -1,0 +1,74 @@
+Requirements:
+	libpcap - http://www.tcpdump.org/release/
+	mysql or oracle
+
+For a successful compilation, in addition to the libraries, the application 
+needs also the include files or the so-called devel packages in most of the 
+distributions. Here is an example of what is needed for Debian:
+  
+  # apt-get install mysql-server libmysqlclient10 libmysqlclient10-dev libpcap0 libpcap-dev
+
+For the rest of the Linux distributions the names of the packages are analogous.
+Regarding the BSD systems - you only need to install the respective pkgsrc 
+packages. If you are a beginner, it is recommended to install the necessary 
+things from packages of the corresponding distribution/OS (deb,rpm,tgz/pkgsrc).
+A frequent problem is the availability of 2 versions (for example) of mysql, 
+one installed from a package, and the other - compiled and installed manually.
+
+Installation:
+
+Download the required version of netacct and unzip it:
+
+  $ zcat netacct-mysql-0.7x.tar.gz|tar -xvf -
+  $ cd netacct-mysql-0.7x
+
+  $ ./configure
+  $ make
+  $ su -
+  # make install (as root)
+
+By default netacct will be installed on /usr/local directory and the config 
+files will be on /usr/local/etc/ , and the application itself will be on
+/usr/local/sbin . If you want to install it somewhere else, use ./configure 
+--prefix= and --sysconfdir= options.
+
+If configure cannot find the installation of mysql (let's assume that you have 
+installed mysql on /usr/local/mysql), use option --with-mysql=, specifying the 
+way to the main directory of the installation of mysql. By analogy for libpcap 
+use options --with-libpcap-libraries= and --with-libpcap-includes=
+
+Preparation of mysql:
+
+ Creation of the database, tables and user for mysql:
+ NOTE: Edit netacct.sql and change the default password for user acct.
+ Then execute the following:
+
+ $ mysql -u root -p < netacct.sql
+
+ If you are upgrading from previous version use upgrade.sql instead of
+ netacct.sql. There is new table called 'rrd'.
+
+ Do not forget to change the password in the naccttab config file of netacct.
+  
+ init.d initializing scripts:
+
+ Can be found on contrib/ directory and are named with the corresponding 
+ extension of the distribution which they are designed for:
+  Debian, RedHati/Fedore Core, FreeBSD, Solaris
+
+ Installation example of some of the scripts:
+   RedHat:
+    cp contrib/nacctd.redhat /etc/rc.d/init.d/nacctd
+    chkconfig --add nacctd
+   Debian:
+    apt-get install rcconf
+    cp contrib/nacctd.debian /etc/init.d/nacctd
+    rcconf
+
+ The rest of the distributions/OS are not supported currently because you have 
+ not sent them to me to include them ;)
+   
+ *Official site*
+  Latest stable version from http://netacct-mysql.gabrovo.com/download/
+  Latest BETA version from http://netacct-mysql.gabrovo.com/beta/
+

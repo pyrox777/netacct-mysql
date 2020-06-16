@@ -1,0 +1,66 @@
+#!/bin/sh
+#
+# Startup script for nacctd
+#
+# chkconfig: 2345 20 20
+#
+# description: nacctd is network accounting daemon.  
+#	       It is used to log network traffic into MySQL base.
+#
+# Script Author:        Vladislav Tzanev <xerxes@eda.bg>
+#
+# processname : nacctd
+# pidfile     : /var/run/nacctd.pid
+# config      : /etc/naccttab
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+INITLOG_ARGS=""
+
+nacctd=/usr/local/sbin/nacctd
+OPTIONS=""
+RETVAL=0
+
+start() {
+	echo -n $"Starting nacctd: "
+	daemon $nacctd $OPTIONS
+	RETVAL=$?
+	echo
+	[ $RETVAL = 0 ] && touch /var/lock/subsys/nacctd
+	return $RETVAL
+}
+stop() {
+	echo -n $"Stopping nacctd: "
+	killproc $nacctd
+	RETVAL=$?
+	echo
+	[ $RETVAL = 0 ] && rm -f /var/lock/subsys/nacctd /var/run/nacctd.pid
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  status)
+	status $nacctd
+	;;
+  restart)
+	stop
+	start
+	;;
+  reload)
+	echo -n $"Reloading nacctd: "
+	killproc $nacctd -HUP
+	RETVAL=$?
+	echo
+	;;
+  *)
+	echo $"Usage: nacctd {start|stop|restart|reload|status}"
+	exit 1
+esac
+
+exit $RETVAL

@@ -1,0 +1,351 @@
+			Network Traffic Accounting Daemon
+
+Description:
+
+The application is used for accounting of the network traffic passing through
+your router/gateway. It is based on the libpcap library and functions as a 
+userspace daemon. Options for dividing the network traffic into 4 categories:
+ - international
+ - peering
+ - direct
+ - local
+The traffic accounts are saved in a database, and for the time being MySQL
+and Oracle are supported. As libpcap is used for gathering the network data
+the application runs (for the moment) on the following operating systems:
+ - Linux
+ - FreeBSD
+ - OpenBSD
+ - Solaris
+For more detailed information regarding a particular OS, please read the
+FAQ file.
+
+How it works:
+
+Netacct functions by analogy with sniffer, i.e. it keeps track of all the 
+traffic passing through the network interfaces assigned by the configuration 
+file. Data are stored in the memory and periodically saved in the database.
+The default data save period is 300 seconds (see option "flush" in the config
+file). 
+
+Configuration:
+
+The best configuration for network traffic accounting is the accounting
+software to work on your router. The software has 2 configuration files.
+Please find below a description of the more important options:
+
+naccttab
+--------
+
+ sniff - can have a value of 0 or 1
+  0 - the network interfaces are not set in a promiscuous mode
+	1 - the network interfaces are set in a promiscuous mode
+
+ database - values mysql or oracle
+ mysql - work with MySQL database (specific mysql options are following):
+	 mysql_user - user name for connection with the database
+	 mysql_pass - password for the database
+	 mysql_host - usually localhost but can work with a remote database
+	 mysql_port - if the MySQL is on the same computer, it is recommendable the
+	 	port 
+	 to be equal to 0, which means that the connection will be made through a 
+	 	socket
+	 mysql_database - the name of the database in which the data will be stored
+	 
+	 oracle - work with ORACLE database
+	 oracle_connect - user/host@database
+	 oracle_home - /path/to/oracle/client/dir
+ 
+ compactnet - this option describes the networks on which you want the traffic 
+ 	to be registered.
+ 	The assigning format is: compactnet network_address netmask
+	(example: compactnet 192.168.1.0 255.255.255.0). The option can be
+	described in the configuration file more than once.
+	
+ ournet - this option is used for local traffic accounting, or - in other 
+ 	words - traffic between 2 interfaces of the router. In most cases ournet 
+	coincides	with the compactnet options. You can find more detailed information
+	in the configuration examples described below.
+	
+ direct_peer - (network_address netmask) - you can use this option if an 
+ 	additional local connection to another supplier is available, e. g.
+	backup line or if you have a local ftp whose traffic you would like to 
+	register separately. However this is used in very rare cases.
+	Note: the option should be present at least once in the configuration
+	file. If you do not want to register such type of traffic, write down, 
+	for example:
+	direct_peer 1.1.1.1 255.255.255.255
+	
+ flush - the interval at which the data are saved in the database (in seconds)
+ 
+ device - network interface which will collect the traffic data.
+ 	It can be present for more than once in the configuration file. 
+	Examples (Linux): 
+	 device eth1 
+	 device eth2
+	Examples (*BSD):
+	 device rtk0
+	 device sk0
+	 
+ ignorenet - (network_address netmask) - if you want to ignore traffic from
+ 	a particular network, use this option. The option can be present
+	for more than once in the configuration file.
+
+ (Only for advanced users)
+ 
+ pidfile - /path/to/netacct.pid file. It gives you an opportunity to start 
+ 	two or more processes of the program on one and the same computer.
+ 
+ errdelay - (times) this option allows you to configure the delaytime of the 
+ 	writing attempt into the database when an error occurs. If an error occurs
+	when attempting to write into the database then netacct waits for
+	flush * errdelay time before the next writing attempt, i. e. if flush = 300
+	and errdelay = 3 then, in case of error, the next attempt will be in 900 
+	seconds.
+
+nacctpeering
+ 
+ The networks for the so-called peering are separated in a different file for 
+ the sake of convenience as the networks can be refreshed periodically through 
+ an Internet site or pulled out of BGP. killall -HUP nacctd will reload this 
+ file in the memory.
+ The format is:
+
+ network/netmask
+  or
+ network/cidr_mask
+
+ Example:
+ 195.187.245.0/255.255.255.0
+  or
+ 195.187.245/24
+
+Examples:
+
+Please find some examples of a configuration file of the most common 
+network configurations:
+
+EXAMPLE 1
+
+eth0 - 62.73.87.1 netmask 255.255.255.252
+eth1 - 192.168.1.0 255.255.255.0
+eth2 - 10.0.0.0 255.255.255.0
+eth2:0 - 10.10.10.0 255.255.255.0
+
+i. e. eth0 is the default gateway of eth1 - this is one network of IP addresses,
+and eth2 - these are 2 networks. We want to register the traffic of network
+10.10.10.0 only, with mask 255.255.255.0
+Note 1: here the example includes only the basic configuration things,
+all the rest remains the same
+Note 2: the IP addresses I use as examples are taken from private networks
+but you should regard them just as networks and can replace them by any other
+real networks. The important thing is for you to understand the location of 
+the networks by the interfaces and the way they are described in the config
+file.
+
+naccttab:
+---[cut]---
+compactnet 10.10.10.0 255.255.255.0
+ournet 10.10.10.0 255.255.255.0
+ournet 10.0.0.0 255.255.255.0
+ournet 192.168.1.0 255.255.255.0
+direct_peer 1.1.1.1 255.255.255.255
+device eth2
+ignorenet 127.0.0.0 255.0.0.0
+---[cut]---
+
+Explanations:
+As you can see, we have 3 times the ournet option so that the traffic between:
+10.10.10.0 <-> 10.0.0.0
+10.10.10.0 <-> 192.168.1.0
+to be taken an account of as a local one for device eth2 as this is a physical
+interface, libpcap registers the whole traffic having passed through it so that
+the alias interfaces are not our concern. As I already said we do not want to 
+register direct_peer traffic but in order that the variable does not remain
+uninitialized, we describe the IP 1.1.1.1 and finally we ignore the whole 
+traffic towards the lo (loopback) interface.
+
+EXAMPLE 2
+the configuration is as in EXAMPLE 1 but we want to register the whole traffic
+to private networks. Here is how the configuration changes:
+
+naccttab:
+---[cut]---
+compactnet 10.10.10.0 255.255.255.0
+compactnet 10.0.0.0 255.255.255.0
+compactnet 192.168.1.0 255.255.255.0
+ournet 10.10.10.0 255.255.255.0
+ournet 10.0.0.0 255.255.255.0
+ournet 192.168.1.0 255.255.255.0
+direct_peer 1.1.1.1 255.255.255.255
+device eth1
+device eth2
+ignorenet 127.0.0.0 255.0.0.0
+---[cut]---
+
+Explanations:
+As you can see, two more compactnet lines and one device line have been added 
+as 192.168.1.0 is located on another network interface.
+
+EXAMPLE 3
+
+eth0 - 62.73.87.1 netmask 255.255.255.252
+eth1 - 192.168.1.0 255.255.255.0
+eth1:0 - 192.168.20.0 255.255.255.248
+eth2 - 10.0.0.0 255.255.255.0
+eth2:0 - 10.10.10.0 255.255.255.0
+
+i. e. eth0 is the default gateway on eth1 we have 2 networks of IPs and on
+eth2 we have 2 networks. We want to register the whole traffic except on the
+192.168.20.0 network, on which we have put several local servers:
+192.168.20.2 - ftp server
+192.168.20.3 - game server 1
+192.168.20.3 - game server 2
+192.168.20.4 - game server 3
+these are examples, the idea is that the traffic to these servers is only for 
+local clients and is not paid for or, for example, is paid for a very low fee.
+we just want to register the free traffic. This is useful for sorting out the 
+clients which make much local traffic and (almost) no real traffic. Here is 
+the configuration:
+
+naccttab:
+---[cut]---
+compactnet 10.10.10.0 255.255.255.0
+compactnet 10.0.0.0 255.255.255.0
+compactnet 192.168.1.0 255.255.255.0
+ournet 10.10.10.0 255.255.255.0
+ournet 10.0.0.0 255.255.255.0
+ournet 192.168.1.0 255.255.255.0
+direct_peer 192.168.20.0 255.255.255.0
+device eth1
+device eth2
+ignorenet 127.0.0.0 255.0.0.0
+---[cut]---
+
+As you can see, the only difference is that the network with the game servers 
+is in direct_peer and the traffic to it will be accounted in the direct traffic
+column. The network is NOT present in compactnet because traffic will be 
+registered _FROM_ IP addresses in compactnet _TO_ IP addresses in direct_peer.
+
+EXAMPLE 4
+
+Configuration when a proxy server is used
+IMPORTANT: the software will read correctly ONLY if the proxy is adjusted to
+run as a TRANSPARENT proxy. Otherwise, as the whole traffic passes through it 
+(adjustments of the client's browser have been made) always, either source ip 
+or destination ip is the proxy server, there is no way the type of traffic to 
+be recognized. The traffic is not properly registered again but all of it will
+fall either into the international, or the peering, or the direct. Therefore, 
+the best decision is no adjustments to be made to the user, and the traffic to
+be redirected with iptables (ipf,pf) to the IP address and port of the proxy 
+server.
+
+eth0 - 62.73.87.1 netmask 255.255.255.252
+eth1 - 192.168.1.0 255.255.255.0
+
+the proxy server works on the same computer on port 3128
+
+# iptables configuration
+iptables -t nat -A PREROUTING -s 192.168.1.0/24 -d 0/0 -p tcp -m multiport --dport 80,21,8080 -j REDIRECT --to-port 3128
+# pf configuration
+rdr on fxp0 inet proto tcp to port 80 -> 10.10.10.10 port 8080
+
+naccttab:
+---[cut]---
+compactnet 192.168.1.0 255.255.255.0
+ournet 192.168.1.0 255.255.255.0
+direct_peer 1.1.1.1 255.255.255.255
+device eth1
+ignorenet 127.0.0.0 255.0.0.0
+---[cut]---
+
+As you can see, the configuration is simple.
+
+Technical details:
+
+The summed-up values for the last hour for each IP are recorded in the 
+database, i.e. if the interval for recording is 300 seconds, netacct checks 
+whether there is a record for the current hour and date for this IP in the 
+database. If not, it will INSERT a new field in the database with the 
+currently gathered information about the traffic, and if there is already
+such a record, it will add the gathered information up to the current moment,
+and will save it into the database.
+
+The records for a particular IP address in the database look like this:
+
+ hour     international         peering          direct         local
+          in        out       in      out       in      out    in  out  
++-----+-------------------+-----------------+----------------+----------+
+|08:00| 5,164,960 498,371 | 824,024 240,049 | 125,155 76,058 |260,853 0 |
++-----+-------------------+-----------------+----------------+----------+
+|09:00| 8,794,618 710,045 |1,354,427 413,418|   1,488 1,033  |326,594 0 |
++-----+-------------------+-----------------+----------------+----------+
+|10:00| 1,324,960 434,371 | 824,024 240,049 | 125,155 76,058 |260,853 0 |
++-----+-------------------+-----------------+----------------+----------+
+|11:00| 2,164,960 128,344 | 434,323 233,144 | 231,225 67,831 |120,742 0 |
++-----+-------------------+-----------------+----------------+----------+
+|12:00|   111,141 122,222 | 846,111 988,865 | 235,001 43,433 |311,143 0 |       +-----+-------------------+-----------------+----------------+----------+
+
+The only restriction for the traffic quantity is the following:
+the traffic quantity account for the period of recording (let's say 300 seconds)
+should not exceed 4 GB. If you experience such a HUGE network load
+(I suppose it's possible with 10Gbit networks), it is recommendable for you to
+decrease the flush value.
+
+Usage (for advanced users):
+
+You can control netacct by sending control signals with the command "kill".
+Basically you will need to use 3 signals:
+
+HUP	- reloads the nacctpeering file. Useful when frequently changing the 
+	peering networks
+TSTP	- does not allow the traffic to be recorded in the database
+CONT	- allows the traffic to be recorded in the database
+
+TSTP and CONT are useful with upgrading or automatic archiving of the SQL bases
+
+Example:
+
+#!/bin/sh
+ killall -TSTP nacctd
+ here_stop_sql_server
+ here_make archives_of what_is to_be_archived_or_upgraded
+ killall -CONT nacctd
+
+Updating the peering file (for Bulgaria):
+
+ #!/bin/bash
+ lynx -dump http://www.nat.bg/look/AS/networks.html > /tmp/bgn
+ cat /tmp/bgn |grep -v "/AS"|grep -v "255.255"|grep "]AS"|awk '{print $2}' > /usr/local/etc/nacctpeering
+ rm -f /tmp/bgn
+ killall -HUP nacctd
+
+ In the contrib/ directory you can find lists of networks for particular 
+ countries which most probably are outdated. If the networks for your country
+ are not available there, you can send them to me so that they are added.
+  
+
+More detailed technical information:
+
+This is how the software checks which type of traffic each packet falls into:
+
+0. checks if src_ip or dst_ip of the packet coincides with any of the 
+	networks in the	compactnet, if not - this packet is ignored
+1. checks if  src_ip or dst_ip of the packet coincides with any of the 
+	networks in the ournet, if yes - then the packet is recorded as local 
+	and the check continues	with the next packet
+2. checks if src_ip or dst_ip of the packet coincides with any of the 
+	networks in the direct_peer .., if yes - then the packet is recorded as 
+	direct and the check continues with the next packet
+3. checks if src_ip or dst_ip of the packet coincides with any of the 
+	networks in the	nacctpeering file .., if yes - then the packet is recorded 
+	as peering and the check continues with the next packet
+4. if the packet has not fallen in any of the categories from 1 to 3, 
+	it is recorded as international
+
+Do not end the application with the kill-9 signal because you will lose the 
+data account since the latest record in the database till the kill moment. 
+It is recommendable that you end it with the TERM signal. In this case the 
+latest data account will be automatically recorded in the database before 
+the application ends.
+
+Nikolay Hristov <geroy@stemo.bg>, <geroy@users.sourceforge.net>

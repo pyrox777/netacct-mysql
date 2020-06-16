@@ -1,0 +1,65 @@
+FAQ
+
+Question: Where should I describe the iptables rules for traffic accounting?
+Answer: netacct works as userspace daemon so no kerner-based firewall rules 
+for traffic accounting are used and needed!
+
+Question: With Fedora Core 2/3/x netacct sometimes starts and sometimes the 
+message Segmentation Fault appears?
+Answer: Delete all comments from the configuration files. The problem exists 
+only with Fedora Core and will be fixed in the next version. 
+
+Question: Whenever I write 'make' on *BSD, it gives me error?!
+Answer: This problem has already been fixed from version 0.78. The solution 
+for the older versions is: Install gnu make (gmake).
+
+Question: sniff 0 or 1 or when should the interface be placed in promiscuous 
+mode?
+Answer: In very rare cases you will need sniff 1, i.e. in specific cases when 
+for example the default gateway is connected with HUB (yes! with HUB exactly) 
+and a server for traffic accounting is connected to it by netacct,(I haven't 
+experienced this case for the time being) or if your network is with HUBs, 
+then netacct doesn't work obligatorily at the default gateway.
+
+Question: I compiled and installed successfully but nothing was written in the 
+base
+Answer: The most common mistake is with people who love compiling manually 
+without having enough knowledge for that (Believe me, they are thousands!)The 
+guy installed XXX linux default install with mysql package in /usr and after 
+that decided to install a newer version, which he put in /usr/local/mysql. 
+Everything's fine but when netacct is compiled the configure script finds 
+first that mysql which is in /usr and when linked it connects with the older 
+library from /usr/lib/libmysql* and not that from /usr/local/mysql/lib/libmysql*. In this case the following error appears: 
+	can't connect through socket /var/run/mysql.sock
+	when as a matter of fact it has to connect to mysql  via:
+	/usr/local/var/run/mysql.sock or via somewhere else.
+
+	These are the steps to follow in order to eliminate the problem:
+
+	0. Check /var/log/syslog, messages for errors. If you try to write in 
+	the base and an error occurs, go to the next step. If it simply doesn't
+	account correctly the traffic, go to the next Question/Answer.
+	1. Check whether you have more than one mysql installation. In most 
+	cases it brings about problems. If you have more than one, delete the 
+	older version.  
+	2. Check whether nacctd is connected with the correct library in this 
+	way:
+	$ ldd `which nacctd`
+	libmysqlclient.so.10 => /usr/lib/libmysqlclient.so.10 (0x00176000)
+	libc.so.6 => /lib/libc.so.6 (0x001ab000)
+	.....
+	3. Check whether you can connect with the acct user with the relevant 
+	password in this way: 
+	$ mysql -u acct -p
+	4. (For idiots) Check whether mysql is started :)
+
+Question: Everything works but the traffic is accounted as international, as 
+peering or is not accounted at all?
+Answer: Well... ... ... indeed: Did you read carefully README and INSTALL 
+files!!!? The popular variants for network configuration and traffic accounting
+are described there. If your configuration is not in the  README file and you 
+don't know how to set up naccttab, ask in the forum at: 
+http://netacct-mysql.gabrovo.com/ or in the last resort (when you have done 
+everything possible) contact me personally at geroy@stemo.bg. Anyway, bear 
+in mind that I don't have much free time, so before you dare ask me, read 
+something here and there! 

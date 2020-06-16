@@ -1,0 +1,163 @@
+/*
+ * $Header: /cvsroot/netacct-mysql/netacct-mysql/src/oracle.pc,v 1.2 2003/04/07 14:40:25 rweber Exp $
+ *
+ * oracle support for netacct
+ * 
+ * code is based on mysql.c with heavy oracle-specific changes
+ *
+ * Comments, suggestions, bugs, ... to rweber@easy-surf.net
+ *
+ */
+
+#include "netacct.h"
+
+#ifdef HAVE_ORACLE
+
+#include <sqlca.h>
+/*#include <sqlcpr.h>*/
+
+static void sqlerror(char *msg);
+
+extern struct HOST_DATA* GetFirstHost(void);
+extern struct HOST_DATA* GetNextHostData(void);
+
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
+int write_oracle(struct HOST_DATA* tmpData, VARCHAR *mydate)
+{
+        int input, output, peer_input, peer_output, direct_input, direct_output, local_input, local_output;
+        char ip[17];
+
+        strcpy(ip,intoa(tmpData->ipAddress));
+
+        EXEC SQL WHENEVER SQLERROR DO sqlerror("ORACLE error ---");
+        EXEC SQL WHENEVER SQLWARNING DO sqlerror("ORACLE warn ---");
+	EXEC SQL WHENEVER NOT FOUND GOTO notfound;
+
+	DEBUG(DBG_DB,sprintf(dbg,"SELECT on ip=%s, peer_flag=%u\n" , ip, tmpData->nPeerFlag));
+
+	EXEC SQL SELECT input, output, peer_input, peer_output, direct_input,
+			direct_output,local_input,local_output
+		INTO :input, :output, :peer_input, :peer_output, 
+			:direct_input,:direct_output, :local_input, :local_output
+		FROM traffic
+		WHERE ip=:ip AND time= to_date(:mydate, 'yyyy-mm-dd HH24');
+
+
+	/*syslog(LOG_DEBUG, "READ: %d %d %d %d %d %d %d %d\n", input,output,peer_input,
+		peer_output,direct_input, direct_output, local_input, local_output);*/
+
+        input+=(tmpData->nPeerFlag==0)?tmpData->nInTrafic:0;
+        output+=(tmpData->nPeerFlag==0)?tmpData->nOutTrafic:0;
+        peer_input+=(tmpData->nPeerFlag==1)?tmpData->nInTrafic:0;
+        peer_output+=(tmpData->nPeerFlag==1)?tmpData->nOutTrafic:0;
+        direct_input+=(tmpData->nPeerFlag==2)?tmpData->nInTrafic:0;
+        direct_output+=(tmpData->nPeerFlag==2)?tmpData->nOutTrafic:0;
+        local_input+=(tmpData->nPeerFlag==3)?tmpData->nInTrafic:0;
+        local_output+=(tmpData->nPeerFlag==3)?tmpData->nOutTrafic:0;
+
+	DEBUG(DBG_DB,sprintf(dbg,"UPDATE on ip=%s, peer_flag=%u\n" , ip, tmpData->nPeerFlag));
+
+	EXEC SQL UPDATE traffic SET
+                        input=:input,
+                        output=:output,
+                        peer_input=:peer_output,
+                        peer_output=:peer_output,
+                        direct_input=:direct_input,
+                        direct_output=:direct_output,
+                        local_input=:local_input,
+                        local_output=:local_output
+                WHERE ip=:ip AND time= to_date(:mydate, 'yyyy-mm-dd HH24');
+
+
+	return 0;
+
+notfound:
+	/*syslog(LOG_DEBUG,"%s notfound, do insert", ip);*/
+
+        input=(tmpData->nPeerFlag==0)?tmpData->nInTrafic:0;
+        output=(tmpData->nPeerFlag==0)?tmpData->nOutTrafic:0;
+        peer_input=(tmpData->nPeerFlag==1)?tmpData->nInTrafic:0;
+        peer_output=(tmpData->nPeerFlag==1)?tmpData->nOutTrafic:0;
+        direct_input=(tmpData->nPeerFlag==2)?tmpData->nInTrafic:0;
+        direct_output=(tmpData->nPeerFlag==2)?tmpData->nOutTrafic:0;
+        local_input=(tmpData->nPeerFlag==3)?tmpData->nInTrafic:0;
+        local_output=(tmpData->nPeerFlag==3)?tmpData->nOutTrafic:0;
+
+	DEBUG(DBG_DB,sprintf(dbg,"INSERT on ip=%s, peer_flag=%u\n" , ip, tmpData->nPeerFlag));
+
+	EXEC SQL INSERT INTO traffic (
+			id, ip,time, input, output, peer_input, peer_output, 
+			direct_input, direct_output,local_input,local_output
+	)
+        VALUES (
+                1, :ip, to_date(:mydate, 'yyyy-mm-dd HH24'), :input, 
+		:output, :peer_input, :peer_output , :direct_input,
+		:direct_output, :local_input, :local_output
+        );
+
+
+	/*syslog(LOG_DEBUG, "INSERT DONE for %s", ip);*/
+
+	return 0;
+
+}
+
+int do_write_list_oracle(void)
+{
+        struct HOST_DATA* tmpData;
+	int i = 0;
+
+	VARCHAR mydate[64];
+
+        EXEC SQL WHENEVER SQLERROR DO sqlerror("ORACLE error ---");
+        EXEC SQL WHENEVER SQLWARNING DO sqlerror("ORACLE warn ---");
+        EXEC SQL CONNECT :cfg->oracle_connect;
+
+	/*syslog(LOG_DEBUG, "CONNECTED TO ORACLE");*/
+
+ 	/* Get the current date and hour without minutes and seconds */
+	EXEC SQL WHENEVER NOT FOUND DO sqlerror("ORACLE fetchdate--");
+	EXEC SQL SELECT to_char(sysdate, 'yyyy-mm-dd HH24') INTO :mydate FROM DUAL;
+	mydate.arr[mydate.len]='\0';
+
+	/* Walk through list and write them to db */
+	for( tmpData=GetFirstHost(); tmpData; tmpData=GetNextHostData())
+        {
+		syslog(LOG_DEBUG,"ip = %s, In = %lu, Out = %lu, peer = %i", 
+			intoa(tmpData->ipAddress), tmpData->nInTrafic, tmpData->nOutTrafic, tmpData->nPeerFlag);
+		i++;
+		if((tmpData->nInTrafic != 0) || (tmpData->nOutTrafic != 0))
+			write_oracle(tmpData, (VARCHAR *)&mydate);
+        }
+
+        /* commit and close connection */
+	EXEC SQL COMMIT WORK RELEASE;
+
+	syslog(LOG_DEBUG,"There are %i entries in Linked List\n", i);
+	return 0;
+
+}
+
+
+/* This is called if something went terribly wrong */
+
+void sqlerror(char *msg)
+{
+    char err_msg[128];
+    int buf_len, msg_len;
+
+    EXEC SQL WHENEVER SQLERROR CONTINUE;
+    syslog(LOG_DEBUG, "\n%s\n", msg);
+    buf_len = sizeof (err_msg);
+    sqlglm(err_msg, &buf_len, &msg_len);
+    syslog(LOG_DEBUG, "%.*s\n", msg_len, err_msg);
+    EXEC SQL ROLLBACK RELEASE;
+    exit(1);
+}
+
+
+#endif

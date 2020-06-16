@@ -1,0 +1,43 @@
+#! /bin/sh
+# /etc/init.d/nacctd
+#
+# Written by Miquel van Smoorenburg <miquels@drinkel.ow.org>.
+# Modified for Debian GNU/Linux by Ian Murdock <imurdock@gnu.ai.mit.edu>.
+# Modified for netacct-mysql by Nikolay Hristov <geroy@stemo.bg>
+
+set -e
+
+DAEMON=/usr/local/sbin/nacctd
+NAME=nacctd
+
+test -x $DAEMON || exit 0
+
+case "$1" in
+  start)
+    echo -n "Starting nacctd: "
+    start-stop-daemon --start --exec $DAEMON
+    echo "nacctd."
+    ;;
+  stop)
+    echo -n "Stopping nacctd: "
+    start-stop-daemon --stop --exec $DAEMON > /dev/null 2>&1
+    echo "nacctd."
+      ;;
+  restart)
+    echo "Restarting nacctd: "
+    start-stop-daemon --stop --verbose --exec $DAEMON
+    start-stop-daemon --start --exec $DAEMON
+    echo "nacctd."
+    ;;
+
+  reload|force-reload)
+    echo "Reloading $NAME peering file"
+    start-stop-daemon --stop --signal 1 --exec $DAEMON
+    ;;
+  *)
+    echo "Usage: /etc/init.d/$NAME {start|stop|reload}"
+    exit 1
+    ;;
+esac
+
+exit 0

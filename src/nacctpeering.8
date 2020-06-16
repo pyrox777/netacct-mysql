@@ -1,0 +1,20 @@
+.\" -*- nroff -*-
+.TH NACCTPEERING 8 "June" "nacctd 0.74"
+.SH NAME
+nacctpeering \- peering network config file for nacctd(8)
+.SH DESCRIPTION
+.B nacctpeering
+is configuration file for peering networks. All networks that stands in this 
+file are counted like local traffic in different mysql table.
+Format of networks are:
+192.168.1.0/24 or 192.168.1.0/255.255.255.0
+.SH AUTHOR
+.B nacctd
+was originaly written by Ulrich Callmeier. This patched version is maintained by Nikolay Hristov <geroy@users.sf.net>, Boril Yonchev <bashbug@users.sf.net>
+.SH BUGS
+For now version which uses pcap can only listen on one interface.
+.SH AVAILABILITY
+.B nacctd
+is part netacct-mysql package which can be downloaded from http://netacct-mysql.sourceforge.net/
+.SH SEE ALSO
+.BR nacctd(8)

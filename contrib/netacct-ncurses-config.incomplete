@@ -1,0 +1,67 @@
+#!/bin/bash
+# Does anyone wants to finish this config script? :)
+# Nikolay Hristov - netacct-mysql configuration tool v0.1
+#
+
+#BOX=dialog
+BOX=whiptail
+
+# remove any temp stuff in /tmp created by this conf tool
+rm -f /tmp/netacct.conf.tmp
+
+$BOX --yesno "Welcome to netacct-mysql interactive configuration tool. Do you want to proceed?" 10 50
+
+ANSWER=$?
+case $ANSWER in
+	1)
+		echo "as you wish .. goodbye :)"
+		exit 0
+		;;
+	*)
+		;;
+esac
+
+$BOX --inputbox "Do you want netacct to work in PROMISCIOUS mode (like sniffer). Note that this is not required if you run it on your default gateway)?" 10 50 "0" 2>/tmp/input
+echo "sniff `cat /tmp/input`" >> /tmp/netacct.conf.tmp
+
+echo "database mysql" >> /tmp/netacct.conf.tmp
+
+$BOX --inputbox "Enter address of mysql user which will be used to store data in database (using root is strongly discouraged)" 10 50 "acct" 2>/tmp/input
+
+echo "mysql_user `cat /tmp/input`" >> /tmp/netacct.conf.tmp
+
+$BOX --passwordbox "Enter your password for user `cat /tmp/input`. Default is acct_password" 10 50 "acct_password" 2>/tmp/input
+
+echo "mysql_password `cat /tmp/input`" >> /tmp/netacct.conf.tmp
+
+$BOX --inputbox "Enter address of mysql server to store accounting data. Default is localhost" 10 50 "localhost" 2>/tmp/input
+
+echo "mysql_host `cat /tmp/input`" >> /tmp/netacct.conf.tmp
+
+$BOX --inputbox "Enter port of mysql server. Default is 0 which means write through socket (if mysql does not listen on any port)" 10 50 "0" 2>/tmp/input
+
+echo "mysql_port `cat /tmp/input`" >> /tmp/netacct.conf.tmp
+
+$BOX --inputbox "Enter mysql database name." 10 50 "netacct" 2>/tmp/input
+
+echo "mysql_database `cat /tmp/input`" >> /tmp/netacct.conf.tmp
+
+echo "pidfile /var/run/nacctd.pid" >> /tmp/netacct.conf.tmp
+
+$BOX --inputbox "Enter period of storing accounting data in mysql. Default is 300 seconds (recommended if you want to draw correct rrdtool graphics)" 10 50 "300" 2>/tmp/input
+
+echo "flush `cat /tmp/input`" >> /tmp/netacct.conf.tmp
+
+$BOX --inputbox "Enter period of error delay (if netacct cannot write in mysql how many seconds to wait until nex try)" 10 50 "60" 2>/tmp/input
+
+echo "fdelay `cat /tmp/input`" >> /tmp/netacct.conf.tmp
+
+echo "debug 0"  >> /tmp/netacct.conf.tmp
+echo "debugfile /tmp/nacctd.debug"  >> /tmp/netacct.conf.tmp
+
+for a in `/sbin/ifconfig |grep eth|awk '{ print $1 }'|grep -v ":"`
+do
+INTER="$INTER $a iface 0"
+done 
+$BOX --checklist "Select interfaces to listen on:" 10 50 5 $INTER 2>/tmp/input
+cat /tmp/input

@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+# Startup script for nacctd
+#
+# $Revision: 1.1 $
+#
+# Author:        Robert Weber <rweber@easy-surf.net>
+#
+
+daemon=/usr/local/sbin/nacctd
+pidfile=/usr/local/etc/nacctd.pid
+
+case "$1" in
+'start')
+	echo "Starting nacctd accounting daemon."
+	$daemon
+	;;
+'stop')
+	
+	if [ -f "$pidfile" ]; then
+		echo "Stopping nacctd accounting daemon."
+		kill `cat $pidfile`
+	else 
+		echo "nacctd not running."
+	fi
+	;;
+*)
+        echo "Usage: $0 { start | stop }"
+        exit 1
+esac
+exit 0
+

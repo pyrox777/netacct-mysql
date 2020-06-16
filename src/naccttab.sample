@@ -1,0 +1,85 @@
+sniff 0				# 0 = not setting PROMISC mode
+				# 1 = put interface in PROMISC mode
+
+database mysql			# must be mysql for now
+				
+mysql_user acct			# usually you don't need to change this
+
+mysql_password acct_password	# change this to your password
+
+mysql_host localhost		# sometimes you need to change this to
+				# 127.0.0.1 instead of localhost
+
+mysql_port 0			# mysql port, 0 if you are using a socket
+
+mysql_database netacct		# usually you don't need to change this
+
+pidfile  /var/run/nacctd.pid	# set pid file
+				# tis will help if you want to
+				# two (or more) nacctd on same machine
+
+compactnet 62.73.77.0 255.255.255.0
+compactnet 192.168.1.0 255.255.255.0
+
+ 				# log traffic only for these networks 
+				# all other packets are NOT logged
+				
+ournet 62.73.77.0 255.255.255.0
+
+				# Ours IP nets for diferenciation of
+				# peering traffic types
+
+direct_peer 217.75.132.0 255.255.255.0
+direct_peer 62.176.90.0 255.255.255.0
+direct_peer 212.72.212.0 255.255.255.0
+direct_peer 217.75.136.0 255.255.255.0
+direct_peer 194.12.226.80 255.255.255.240
+direct_peer 194.12.233.96 255.255.255.224
+direct_peer 194.12.233.160 255.255.255.224
+
+				# log traffic between 2 or more regional ISP-s
+
+flush 300                       # flush every 5 minutes
+				# this gives the interval in seconds
+				# when the accumulated data is flushed
+				# to the output file
+
+errdelay 2
+fdelay 60
+
+notdev eth1			# Dont log entries for this device
+                                # Use this on routers that you dont
+                                # log forwarded packets twice.
+
+device eth0                     # device to put into promiscous mode
+				# you can specify as many as you want
+				# and you don't have to specify one
+				# (e.g. if this runs on your router)
+				#
+				# if you plan to use it on some *BSD
+				# system put here apropriate device
+				# i.e. - device ep0
+
+# iflimit eth0			# on machines with multiple interfaces,
+				# log only packets on this interface
+				# mutually exclusive with hostlimit
+
+# ignoremask 255.255.255.0        # Ignore traffic on same class C net
+				# This means traffic that is on
+				# your local LAN is not counted.
+				# This is useful for NFS etc.
+				# Not giving this option causes everything
+				# to be counted.
+				# This can degrade performance seriously!
+
+ignorenet 127.0.0.0 255.0.0.0   # ignore loopback net
+				# You can define as many ignorenets as
+				# you want. Ignoring a net with
+				# ignorenet is not as efficient as
+				# ignoremask. Thus you should exclude
+				# your local network with ignoremask,
+				# not with ignorenet (although this is
+				# is possible).
+
+debug 0                         # set debugging level
+debugfile /tmp/nacctd.debug	# where to put debugging info

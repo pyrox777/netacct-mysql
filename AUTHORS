@@ -1,0 +1,25 @@
+* Original net-acct was developed by Ulrich Callmeier
+
+* netacct-mysql:
+
+ Nikolay Hristov <geroy@users.sourceforge.net>
+ Boril Yonchev <bashbug@users.sourceforge.net>
+
+* bug reports/testing/patches/contributions:
+
+ Valeri Dachev <valery@zonebg.com> - some PPP and other patches
+ Vladislav Tzanev <xerxes@eda.bg> - rpm packages .. but he moved to debian?! :)
+ Andrey A. Tutolmin <lh79@mail.ru> - freebsd support
+ Michael Gjels <mgj@pe.dk> - bug reports and patch
+ kad@blackcatlinux.com - patches
+ Kostadin Zlatev <koce@velingrad.com> - bugfix in netstat interface
+ d.sadilek@globalview.de - patches
+ Sebastian Nohn (web interface for full logging)
+
+ marinov@edasat.com - alpha/beta tester .. sorry for chashing his server
+ several times :)
+
+ Thanks to:
+ Radka & Mahadevata- english translations
+ and all the traffic accounting community for support and bugreports
+ Special thanks to max's countenance :)

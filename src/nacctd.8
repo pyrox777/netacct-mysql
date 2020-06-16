@@ -1,0 +1,31 @@
+.\" -*- nroff -*-
+.TH NACCTD 8 "June" "nacctd 0.74"
+.SH NAME
+nacctd \- network traffic accounting daemon with mysql support
+.SH SYNOPSIS
+.B nacctd [-dD] [-c filename] 
+.SH DESCRIPTION
+.B nacctd
+is an network traffic accounting daemon which supports two styles of logging
+compact and full. Compact logging count traffic in mrta style. Full logging
+just logs everything. All data can be written in mysql or in file.
+.SH OPTIONS
+.TP
+.BI \-d 
+Switch on debugging
+.TP
+.BI \-D 
+Don't detach (for inittab)
+.TP
+.BI \-c
+Specify alternative configuration file
+.SH AUTHOR
+.B nacctd
+was originaly written by Ulrich Callmeier. This patched version is maintained by Nikolay Hristov <geroy@users.sf.net>, Boril Yonchev <bashbug@users.sf.net>
+.SH BUGS
+For now version which uses pcap can only listen on one interface.
+.SH AVAILABILITY
+.B nacctd
+is part netacct-mysql package which can be downloaded from http://netacct-mysql.sourceforge.net/
+.SH SEE ALSO
+.BR nacctpeering (8)

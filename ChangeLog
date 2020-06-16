@@ -1,0 +1,481 @@
+Tue Oct 16 2001 20:10:41 Nikolay Hristov <geroy@stemo.bg>
+	* netacct.h:
+	* process.c:
+	* naccttab.sample:
+		fixed 'disable' fields in config file, now it works
+		does not write some fields in dump file - fixed
+
+Tue Oct 9 2001 18:56:54 Nikolay Hristov <geroy@stemo.bg>
+	* config.c:
+	* process.c:
+		added peering support, reads from /etc/nacctpeering IP
+		addresses which are logged with peer_flag=1 in mysql
+		database. all other are logged with peer_flag=0
+
+Wed Oct 3 2001 10:55:22 Nikolay Hristov <geroy@stemo.bg>
+	* process.c:
+		added return 1; when mysql error is occured. this will fix
+		incorrect exiting from netacct when can't connect to mysql
+	* capture.c:
+		fixed memroy leak reported by ernesto
+		fixed typing bug where nacctd does not remove data from
+		dump file when is written i mysql and the dump file gets
+		more larger
+	* README.mysql:
+	* INSTALL:
+		documentation updates
+
+Tue Sep 18 2001 16:18:53 Nikolay Hristov <geroy@stemo.bg>
+	* configure.in:
+	* Makefile.am:
+	* src/Makefile.am:
+		rewritten autoconf support, to compile on FreeBSD/OpenBSD
+		still not tested
+	* capture.c:
+	* netacct.h:
+		experimental pcap support to compile & work on *BSD
+		original capture-pcap.c for solaris ported to wotk
+		with linux and FreeBSD by BASHbug@sf.net
+
+Fri Jul 13 14:36:50 2001 Nikolay Hristov <geroy@stemo.bg>
+        * configure.in:
+        * config.guess:
+        * config.sub:
+		added support for configure script to work with
+		--with-mysql-lib=DIR and --with-mysql-headers=DIR
+	* TODO:
+	* README.mysql:
+		some minor updates
+	
+Mon Jul 9 16:30:54 2001 Nikolay Hristov	<geroy@stemo.bg>
+	* Makefile.in:
+		bugfixes
+	* naccttab.sample-pcap:
+		moved user/pass/mysqlhost/database in config file
+	* INSTALL:
+	* README.mysql:
+	* TODO:
+		documentation updates
+		
+Tue Jun 26 17:38:54 2001  Nikolay Hristov <geroy@stemo.bg>
+	* naccttab.sample:
+	* process.c:
+	* config.c:
+	* netacct.h:
+		moved user/pass/mysqlhost/database in config file
+	* nacctd.debian:
+		added debian init.d script
+
+Tue Jun 19 19:32:31 2001  Nikolay Hristov <geroy@stemo.bg>
+	* process.c:
+	* config.c:
+	* netacct.h:
+		some fixes and added option - choosing type of accounting
+		in mysql ot in /var/log/net-acct
+	* README:
+	* README.mysql:
+		some docs update
+
+Tue May 29 15:57:00 2001  Sebastian Nohn <sebastian@nohn.net>
+	* new web interface
+
+Thu Apr 26 11:20:00 2001  Boril Yonchev	<boril@users.sourceforge.net>
+	* process.c:
+	* netacct.h:
+	* capture-linux.c:
+	    some changes for mySQL support but they are not tested yet
+	    and fixes for some compilation warnings
+	* netacct.sql:
+	    optimized tables
+	    
+Thu Feb 08 17:30:00 2001  Nikolay Hristov   <geroy@stemo.bg>
+	* process.c:
+	    patched to write data in mySQL instead of file
+	    (still need some code cleanup)
+
+Mon Sep 13 15:30:00 1999  Richard Clark     <rclark@ethos.co.nz>
+
+	* process.c:
+	    fixed month-off-by-one bug in Human Readable time.
+
+Fri Sep 17 23:20:00 1998  Mark Knox	    <nergal@bladesinger.com>
+
+	* config.c:
+	    patch from Robert Vogelgesang to fix multiple notdev bugs
+
+	* process.c:
+	    fixed masq code typos and added ICMP masquerading - patch submitted by
+	    Thorsten Kuehnemann 
+
+	    fixed bug in SIGHUP handler where promisc devices were not being reinitialized
+	    thanks to Robert Vogelgesang for reporting this one as well.
+
+Mon Jun 29 20:39:00 1998  Mark Knox         <nergal@bladesinger.com>
+
+	* process.c:
+	    increased default hash table size to 4096
+	    improved HASH function
+
+	* Makefile:
+	    added -O2 to compile flags
+
+	* README:
+	    updated mailing list addresses etc
+
+Thu May  7 10:24:00 1998  Mark Knox         <nergal@travel-net.com>
+
+	* process.c:
+	    added hash table patch from Tom Brown <tbrown@baremetal.com>
+	    added remap_masq function
+	    changed SIGHUP handling to re-read config file
+
+	* netacct.h: added iflist to struct config
+		     added masq support from Nigel Metheringham
+
+	* capture-linux.c: added code for iflist (based on patches from
+	    Nigel Metheringham <Nigel.Metheringham@theplanet.net) - thanks :)
+
+	* config.c: added parser for iflist keyword
+		    added support for masquerading
+
+Wed May  6 12:22:00 1998  Mark Knox         <nergal@travel-net.com>
+
+	* netacct.h: added struct mon_host_struct for hostlimit
+
+	* config.c: added case to parser for hostlimit keyword
+
+	* capture-xxx.c: added code to packet_loop for hostlist
+
+Sun Jul 14 19:29:42 1996  Ulrich Callmeier  <uc@brian.lunetix.de>
+
+	* netacct.h: Naming fixes
+
+	* process.c:
+	Changed some of the lck-debug messages to level DBG_ANNOYING
+	Some changes in output format
+
+	* capture-linux.c: Include ip_icmp.h
+
+	* naccttab.sample:
+	Updated info about runtime header information configuration
+
+	* capture-linux.c: Made header information runtime configurable
+
+	* config.c:
+	Length of name prefix for header information calculated while reading config file
+
+	* netacct.h: Added length field to headerdat
+
+	* config.c: Added runtime configuration of header information
+
+	* process.c: More detailed debugging messages for lck
+	Format for human readable time changed
+
+	* README: Various updates/fixes to the documentation
+
+	* naccttab.sample: Added runtime header configuration
+
+	* netacct.h: Added runtime configuration of header information
+
+	* netacct.h:
+	Initial integration of patches by Vlad (TCP_USER_INFO, HUMAN_READABLE_TIME)
+
+	* process.c:
+	Initial integration if patches by Vlad Seriakov (TCP_USER_INFO, HUMAN_READABLE_TIME)
+
+	* capture-linux.c: Some syntax errors with new offsets fixed
+	Initial integration of patches by Vlad Seriakov
+
+	* process.c: Integrated Bernd's patches
+
+	* naccttab.sample: Changes by Bernd, adaptions for his extensions
+
+	* main.c: Integrated patch of Bernd (-D no detach for inittab)
+
+	* config.c: Integrated notdev-patch of Bernd
+
+	* capture-linux.c, netacct.h, README: Integrated patches of Bernd
+
+	* naccttab.sample: Initial revision
+
+	* capture-linux.c:
+	Added offsets for tr and isdn devices. Decided to make this configurable
+	at runtime.
+
+	* capture-linux.c:
+	Corrected bug found by Andreas Heilwagen and Sebastian Schaefer,
+	used dynamicaddr instead of otheraddr incorrectly.
+
+Sun Jun  4 19:07:41 1995  Ulrich Callmeier  <uc@brian.lunetix.de>
+
+	* capture-linux.c: Fixed two bugs with new dynamic ip stuff.
+
+Sun May 28 20:18:55 1995  Ulrich Callmeier  <uc@brian.lunetix.de>
+
+	* netacct.h:
+	Prefixed variables macro DEBUG. Not doing this caused obscure bugs
+	in the debugging output.
+
+	* README: Various fixes and updates
+
+Sun May 28 16:32:28 1995  Ulrich Callmeier  <uc@brian.lunetix.de>
+
+	* utils.c: Portability fixes
+
+	* process.c:
+	Removed a few include files that are already included via netacct.h
+
+	Split up capture.c into process.c and capture-$(ARCH).c
+
+	Removed variables ignorenet, dynadat
+
+	Removed functions init_capture, exit_capture, onignorelist,
+        check_user_dev2line, check_user_dynamicip, handle_ip
+
+	Reworked do_acct to use architecture dependend packet_loop()
+
+	Added TELL_WAIT* functions to fix races in child/signal
+        handling. See Stevens APUE 8.8
+
+	Fixed bug in SIG_CHLD handling - didn't check return value from
+	waitpid before testing errno, so if errno accidentially was set to
+	ECHILD before... go figure...
+
+	Added debugging output in various places.
+
+	* main.c:
+	New argument to macro SETSIG to set flags. Not really used until now.
+
+	Added typecast for pid output
+
+	* daemon.c: Added debugging output to daemon_stop
+
+	Changed linux/time.h into sys/time.h for portability
+
+	* netacct.h: Improved portability by changing some of the includes
+
+	Changed DEFAULT_IGNOREMASK to 255.255.255.255, so it matches the
+        documentation
+
+	Some more globals due to the splitting of capture.c into process.c
+        and capture-$(ARCH).c
+
+	Some #ifdef linux added for linux specific parts
+
+	* config.c:
+	added option excludenamelookup (keyword "exclude-name-lookup")
+
+	* capture-linux.c:
+	Split up capture.c in process.c and capture-$(ARCH).c
+
+	Removed variables running, packets, plist, olist, plistsize,
+        olistsize, lck, writing, dumping, writepid, dumppid, may_write,
+        err_delay, max_err_delay, now, ignorenet, list_compares,
+        list_lookups
+
+	Removed functions reopen_sockets, do_acct, register_packet,
+        do_write_list, write_list, dump_curr_list, child_finished,
+        alarm_handler, write_log, signal_debug, signal_ignore
+
+	do_acct is now split up in packet_loop (architecture dependend)
+        and do_acct (in process.c)
+
+	implemented Bart's suggestions for new style dynamic ip handling
+	(excludenamelookup option and checking other addr if first fails)
+
+Tue May 23 19:24:12 1995  Ulrich Callmeier  <uc@brian.lunetix.de>
+
+	* main.c: Removed global capture_sd
+
+	* process.c, capture-linux.c: Initial revision
+
+Mon May 22 22:28:43 1995  Ulrich Callmeier  <uc@brian.lunetix.de>
+
+	* netacct.h: Minor fixes
+
+	* main.c, config.c: Fixed unbuffering of debug output file
+
+	* capture.c: Added new style dynamic ip handling
+
+	* capture.c: Cleaned up debugging handling
+
+	Prepared new style dynamic ip handling
+
+	Added dontignore handling
+
+	* config.c: Initialize debugname
+
+	* config.c:
+	Added parsing of dontignore, dynamicip, debugfile, dynamicnet
+
+	* netacct.h: Cleaned up debugging handling, addition DBG_*, macro DEBUG
+
+	Prepared for new style handling of dynamic ip
+
+	* main.c: Cleaned up debugging handling
+
+	* daemon.c: Added fclose(dbg_file) for new style debugging output
+
+Sun May 21 12:54:44 1995  Ulrich Callmeier  <uc@brian.lunetix.de>
+
+	* README: Erklaert, wie man zur Discussion-Liste subscribed.
+
+	minor fixes
+
+Wed Apr 12 19:23:34 1995  Ulrich Callmeier  <uc@brian.lunetix.de>
+
+	* capture.c: Removed unused variable tmp in do_write_list
+
+Wed Apr 12 19:13:43 1995  Ulrich Callmeier  <uc@brian.lunetix.de>
+
+	* capture.c: You can now disable certain fields of output.
+
+	* config.c: Added parsing of disable statememts
+
+	* README: Updated for 0.3
+
+	* netacct.h: Added disabling of certain fields
+
+Wed Mar  1 17:00:56 1995  Ulrich Callmeier  <uc@brian>
+
+	* README: For release 0.2
+
+	* main.c:
+	Feature added: a pid file (in /var/run) is created on startup and deleted
+	on exit. On startup we check for the existence of such a file. If one
+	exists and contains the pid of a process still running we quit
+
+	* daemon.c: unlink pid-file on exit
+
+	* capture.c: Made dumppid and writepid volatile.
+
+	Added some debugging output.
+	Messages about corrected clock only if difference >5 seconds.
+
+	* main.c: Using SA_RESTART was a bad idea. Removed it again.
+
+Mon Feb 27 16:07:17 1995  Ulrich Callmeier  <uc@brian>
+
+	* capture.c:
+	Fixed a bug in SIGCHLD handling. We have to loop until waitpid return 0, not just check
+	once.
+
+	Removed silly reinstallation of signal handlers. This is 1995...
+
+	* main.c:
+	We use sigaction instead of signal to set up our signal handlers. Interrupted
+	systemcalls are to be restarted.
+
+Tue Feb 21 16:21:49 1995  Ulrich Callmeier  <uc@brian>
+
+	* README: Bumped up to version 0.1.
+
+Tue Feb 21 16:18:58 1995  Ulrich Callmeier  <uc@brian>
+
+	* capture.c:
+	Added three missing unlink(tmpn). This caused a lot of empty
+	lockfiles to be left in /tmp. Arghhhh.
+
+	* capture.c:
+	Added some if(debug_level > x) to prevent unnecessary syslog output.
+
+Mon Feb 20 23:35:57 1995  Ulrich Callmeier  <uc@brian>
+
+	* capture.c: Support for delayed write of data:
+	 Added dump process
+	 Added data timestamping
+
+	Seperated out do_write_list from write_list.
+	do_write_list is used by write_list and dump_curr_list.
+
+	Cleaned up alarm signal handler, now in an own routine alarm_handler
+	This maintains an internal clock (in variable now)
+
+	Removed unneccessary globals flush and fname now that cfg is global
+
+	* main.c: Cleaned up signal handling:
+	 New handler alarm_handler for SIGALRM
+	 Added comments
+
+	Save old dumpfiles on startup (save_dumpfile)
+
+	Added check if caller is superuser on startup.
+	Exit with appropriate message otherwise. Thanks to Randolf Skerka
+	<Skerka@Heim2.TU-Clausthal.DE> for the hint.
+
+	* config.c: Support for dumpname and fdelay.
+
+	Added check if filename and dumpname are given.
+
+	* daemon.c: Changed call to write_log to force a complete flush.
+
+	* netacct.h:
+	Support for holding entries in memory at least a certain time:
+	 Added fdelay to struct config. Added default define for fdelay.
+	 Added dumpname to struct config.
+	 Added field when to struct ipdata (to record last use of entry).
+
+	Cleaned up alarm handler. Changed prototype of write_log accordingly.
+	Added prototype for new alarm_handler.
+
+	* daemon.c: Adapted call to write_log to new declaration.
+
+Mon Feb 20 16:00:20 1995  Ulrich Callmeier  <uc@brian>
+
+	* config.c: Added support for parsing "line" statements.
+
+	* main.c: Added dev2line global.
+
+	* netacct.h:
+	Added (preliminary) support to associate slip/ppp packets with users.
+
+	* capture.c:
+	Added (preliminary) support for associating slip/ppp packets with users.
+
+	* README: Updated to newest release.
+
+	* README: Initial revision
+
+Sun Feb 19 22:11:47 1995  Ulrich Callmeier  <uc@brian>
+
+	* capture.c:
+	Adapted init_capture and exit_capture to new handling of devices to set into
+	promiscous mode.
+
+	Minor cleanups.
+
+	* main.c: Moved signal setups to function signal_setup.
+
+	Removed struct capture.
+
+	* config.c:
+	Adapted read_config to deal with new linked list of promisc devices.
+
+	Provided sensible defaults for all of the values. These are imported from
+	netacct.h.
+
+	* netacct.h: Cleaned up promiscious device handling.
+	Got rid of struct capture. This is now in struct promisc_device.
+	There is now a linked list of devices to put into promiscous mode. This
+	can be empty.
+
+	Provided sensible defaults for some of the naccttab settings (DEFAULT_* defines)
+
+	Removed define for version. This is now done with RCS.
+
+	Configuration information is now a global.
+
+	* daemon.c:
+	Removed check for capture -> reset. This is now done in exit_capture.
+
+Wed Feb  8 15:18:05 1995  Ulrich Callmeier  <uc@brian>
+
+	* capture.c:
+	Ifdeffed ignoring of unencapsulated packets. A better system has to be
+	devised.
+
+Mon Jan 30 21:10:26 1995  Ulrich Callmeier  <uc@brian>
+
+	* netacct.h, utils.c, main.c, daemon.c, config.c, capture.c:
+	Initial revision under RCS
+

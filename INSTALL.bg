@@ -1,0 +1,76 @@
+Изисквания:
+	libpcap - http://www.tcpdump.org/release/
+	mysql или oracle
+
+За успешна компилация на програмата са нужни освен библиотеките съшо така и
+include файловете или така наречените devel пакети в повечето дистрибуции.
+Ето пример за Debian какво е нужно:
+  
+  apt-get install mysql-server libmysqlclient10 libmysqlclient10-dev libpcap0 libpcap-dev
+
+За останалите Линукс дистрибуции имената на пакетите са аналогични. За BSD
+системите е нужно само да инсталирате съответните пакети от pkgsrc.
+За предпочитане е ако сте начинаещ нужните неща да ги инсталирате от готови
+пакети на съответната дистрибуция/ОС (deb,rpm,tgz/pkgsrc). Често срещан
+проблем е присъствието на 2 версии (примерно) на mysql, едната инсталирана
+от пакет а другата компилирана  на ръка.
+
+Инсталация:
+
+Изтегете желаната версия на netacct и я разархивираите:
+
+  $ zcat netacct-mysql-0.7x.tar.gz|tar -xvf -
+  $ cd netacct-mysql-0.7x
+
+  $ ./configure
+  $ make
+  $ su -
+  # make install (като root)
+
+По подразбиране netacct ще бъде инсталиран в /usr/local директорията като
+конфигурационните файлове ще са в /usr/local/etc/ а самата програма в
+/usr/local/sbin
+Ако искате да я инсталирате някъде другаде използвайте ./configure --prefix=
+и --sysconfdir= опциите.
+
+Ако configure не може да открие инсталацията на mysql (да предположим че
+сте инсталирали mysql в /usr/local/mysql) използвайте опцията --with-mysql=
+като посочите пътя на основната директория на инсталация на mysql.
+Аналогично за libpcap използвайте опциите --with-libpcap-libraries= и 
+--with-libpcap-includes=
+
+Подготовка на mysql:
+
+ Създаване на базата, таблиците и потребителя за mysql:
+ ВАЖНО: Редактирайте netacct.sql и променете паролата за потребителя acct.
+ След това изпълнете следното:
+
+ $ mysql -u root -p < netacct.sql
+
+ Не забравяйте да смените и паролата в naccttab конфигурационния файл на
+ netacct.
+  
+ Ако правите upgrade от по-стара версия на netacct използвайте upgrade.sql
+ Разликите са че в новата версия има нова таблица която се казва rrd
+
+ init.d стартиращи скриптове:
+
+ намират се в contrib/ директорията и съответно са кръстени с разширение
+ дистрибуцията за която са предназначени:
+  Debian, RedHat, FreeBSD, Solaris
+
+ Примерна инсталация на някои от скриптовете:
+   RedHat:
+    cp contrib/nacctd.redhat /etc/rc.d/init.d/nacctd
+    chkconfig --add nacctd
+   Debian:
+    apt-get install rcconf
+    cp contrib/nacctd.debian /etc/init.d/nacctd
+    rcconf
+
+ Останалите дистрибуции/ос не се поддържат за момента защото все още не сте
+ ми ги изпратили за да ги включа ;)
+   
+ *Official site*
+  Latest stable version from http://netacct-mysql.gabrovo.com/download/
+  Latest BETA version from http://netacct-mysql.gabrovo.com/beta/

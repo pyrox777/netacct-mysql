@@ -1,0 +1,69 @@
+#!/bin/sh
+#
+# Startup script for nacctd
+#
+# description: nacctd is network accounting daemon.
+#              It is used to log network traffic into MySQL base.
+#
+# Author : Andrey A. Tutolmin (lh79@mail.ru)
+#
+# Changelog :
+#
+# 2002-02-08 Andrey A. Tutolmin (lh79@mail.ru)
+#  - simple script created
+#
+# processname : nacctd
+# pidfile     : /var/run/nacctd.pid
+# config      : /usr/local/etc/naccttab
+#
+
+# Source function library
+if [ -f /usr/local/etc/nacct/functions ]; then
+. /usr/local/etc/nacct/functions
+fi
+
+Netacct=nacctd
+prefix=/usr/local
+exec_prefix=${prefix}
+NetacctBin=${exec_prefix}/sbin/${Netacct}
+NetacctCfg=/usr/local/etc/naccttab
+NetacctPid=/var/run/nacctd.pid
+NetacctLog=/var/log/net-acct
+NetacctDmp=/var/log/net-acct-dump
+
+# Check that nacct exists.
+test -f $NetacctBin || exit 0
+
+# Check that nacct.cfg exists.
+test -f $NetacctCfg || exit 0
+
+# See how we were called.
+case "$1" in
+
+        start)
+                echo -n " nacctd"
+                ${NetacctBin}
+                ;;
+
+        stop)
+                kill `head -n1 ${NetacctPid}`
+                ;;
+
+        reload)
+                echo "Reloading nacctd..."
+                kill -1 `head -n1 ${NetacctPid}`
+                ;;
+
+        restart)
+                echo "Restarting nacctd..."
+                $0 stop
+                $0 start
+                ;;
+        *)
+                echo "Usage: nacctd {start|stop|restart|reload}"
+                exit 1
+                ;;
+
+esac
+
+# End of this script

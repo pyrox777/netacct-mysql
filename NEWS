@@ -1,0 +1,138 @@
+Chanes in 0.78:
+
+ * last minor bugfix in mysql code.
+ * all documentation rewriten: README, INSTALL, FAQ, README.Solaris
+ 	 also versions in Bulgarian.
+ * fixed insecure temporary files - Debian - DSA-559-1 (net-acct)
+ * moved clear_counters(); in the right place (fix for traffic loss in some
+   specific situations)
+ * added a lot of error checkings 
+ * now works with ppp interface .. pptp vpn patched and tested by Valeri Dachev
+ * mysql.c: code optimization by Valeri Dachev
+ * mysql.c: changed %li to %ul .. this makes max traffic per write = 4Gb
+ * added proper sql indexes
+ * kill -HUP now reloads only nacctpeering file
+ * compiles on NetBSD 1.6.x, 2.0 still need testing
+ * compiles on OpenBSD 3.x
+ * autoconf rewritten from scratch. no need to use gmake under *BSD anymore
+ * fixed some compilation errors and warnings on FreeBSD (also *BSD i think)
+   thanks to Roam (for help) and ThUnDeR (for the FreeBSD 4.8 shell)
+ * some changes in mysql.c to store data for 5 minutes rrdtool graphics
+ * added Oracle support by Robert Webber! Great work!
+ * some code cleanups and most of the code is commented now
+ * removed some unused old code
+ * little DEBUG fix (never can be used) moved before break; in child_finished()
+	
+Changes in 0.76:
+
+* added choice to set or not to set PROMISC mode in cfg file
+* Replaced && with || in mysql.c .. it's a minor bugfix that will never
+  affect accounting in real life but that's the right way. Thanks to Robert
+  Weber <rweber@easy-surf.net>
+* Added bulgarian README.bg, INSTALL.bg and FAQ-bg.txt
+* added Solaris startup script Robert Weber <rweber@easy-surf.net>
+* Now it compiles and run on Solaris -  Robert Weber <rweber@easy-surf.net>
+* mysql.c - return 0 - fix for returning correct value
+* removed some code for config filename and dumpname
+* removed some old code from configure.in (HASHSIZE)
+* fix for many created files in /tmp/nacctd.write.[pid] on every write in
+  mysql.
+* fix for error: no filename given on freebsd
+* added Ukranian IP space
+
+Changes in 0.75:
+
+* major code changes.
+* we now stop supporting full logging .. if you want to use it get 0.73 version.
+* new and optimized functions to collect data in memory so updating in sql
+  will NOT cause heavy load. (thanx to varosi@mail.com)
+* now porting to other sql databases will be much more easier
+* removed some code for writing in file/dumpfile
+* some documentation updates
+* added mysql_free_result() so allocated memory from mysql_store_result()
+  can be freed :)
+* added russian ip space by Stoyan Lekov <lekov@sts.bg>
+* updated bulgarian ip space and added example in readme how to get them
+  thanx to Stephan Trajkoff <stephan@itp.bg> :)
+* rewritten some code to work with more than 1 interface usings pthreads
+* removed mysql_table value from config file
+* removed table accounting (full logging)
+* removed some unused files
+  
+Changes in 0.74rc1:
+
+* patch for netstat web interface, fixed problem when global_vars = off in php
+  environment. Added new types of peering traffics direct and local, local 
+  traffic have some problem with loging into mysql base. Added different 
+  prices for input and output traffic type. 
+* added mysql_port in config file, if = 0 use socket. Patch provided by 
+  d.sadilek@globalview.de
+* added support for more than one interface
+
+WARNING !!! WARNING !!! WARNING !!!
+ 
+Update structure of traffic and users tables, there are a changes.
+
+Changes in 0.73 Final:
+
+* added man pages for nacctd(8) and nacctpeering(8) config file
+* bugfix in netstat web interface. Thanx to Kostadin Zlatev <koce@velingrad.com>
+* added FreeBSD 4.x start script. Thanx to Andrey A. Tutolmin (lh79@mail.ru)
+* more detailed reports of netstat, per hour statistics and more .. see NEWS
+  file in netstat dir for list of all changes by Boril Yonchev
+* mrta2netacct perl script if you want to move from mrta -> nacct, this will
+  convert mrta database to netacct - Boril Yonchev
+* Documentation
+
+Changes in 0.73rc4:
+
+* RedHat init.d script update, now it supports chkconfig. thanx to XERXES
+* some debug/commented code cleanups
+* new web interface for compactnet logging by BASHbug (netstat).
+* new style of compactnet logging (mrta style) in different table. all
+  compactnet logs now goes to table traffic .. everything else in
+  accounting. patch by BASHbug <bashbug@users.sourceforge.net>
+* errr ... removed sql query -> syslog, makes syslog very large ;)
+* fixed incorrect logged ports on tcp/udp session - missing ntohs(). thanks
+  to Michael Gjels <mgj@pe.dk>
+
+Changes in 0.73rc3:
+
+* fixed disable fields in config file. now they are functional
+* moved mysql table in config file, added pid file in config file, 
+  added duration field (patches by kad@blackcatlinux.com)
+* added safe_nacctd.pl to import data from net-acct-dump.o.x.x.x files
+  in mysql (thanks to XERXES)
+* added two styles of network mask in nacctpeering file
+  12.3.4.5/24 or 1.2.3.4/255.255.255.0
+* added --with-hashsize=number (to change default hashsize=4096)
+* updated some documentation
+* fixed nacctd dying when can't connect to mysql, writing is delayed
+* fixed memory leak in capture.c
+* fixed typing bug in process.c (does not remove data from dump file when 
+  write it to mysql)
+
+Changes in 0.73rc2:
+
+* rewrite of autoconf support, libpcap & mysql search, more platforms, allow to
+  set different dir for config file (--sysconfdir= option)
+* ported original capture-pcap.c which was written for solaris to compile
+  on linux and freebsd. now it is capture.c
+* netacct-mysql now depends on mysql and libpcap
+* fixed some linking errors (-lm and -lz .. for mysql)
+* updated INSTALL docs
+* added redhat.init script
+* successdul compiled and run on Linux , OpenBSD 2.9 and FreeBSD 4.3
+
+Changes in 0.73rc1:
+
+* added compactnet confguration option
+* added simple autoconf support
+* moved mysql user/pass in config file
+* added debian.init script
+* added support for choosing mysql or file logging
+
+Changes in 0.73a1:
+
+* added mysql support, now data is written in mysql instead of file
+* some compilations warnings fixed

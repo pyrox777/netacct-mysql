@@ -1,0 +1,16 @@
+#
+# every network which is in this file is logged with peer_flag = 0
+# netmask style is:
+# 2.2.3.4/24
+# or
+# 2.3.4.5/255.255.255.0
+#
+# this file is with bulgarian IP space so it depends on your country
+# feel free to send me any ip network for specific country
+#
+# these ip's bellow are just a sample .. put here you real peering networks
+# look at contrib/ dir for some already collected networks
+#
+
+213.174.1.0/24
+212.116.129.0/255.255.255.0
