@@ -1,0 +1,5 @@
+# Miscellaneous default ignores
+*.log
+*.swp
+.history
+.DS_Store
