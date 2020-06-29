@@ -1,3 +1,13 @@
+# Project specific ignores
+Makefile
+config.h
+config.status
+src/.deps
+src/Makefile
+src/nacctd
+stamp-h1
+*.o
+
 # Miscellaneous default ignores
 *.log
 *.swp
