@@ -26,6 +26,8 @@
 
 #include <arpa/inet.h>
 #include <net/if.h>
+#include <string.h>
+
 /* #include <netinet/in_systm.h> */
 /* #include <netinet/ip.h> */
 #ifdef _LINUX_ 
@@ -330,3 +332,6 @@ pcap_t *pds[MAX_INTERFACES]; /* array of packet descriptors per interface */
 pthread_mutex_t pt_lock;
 pthread_t pt[MAX_INTERFACES];
 static int interface_number = 0;
+
+extern struct HOST_DATA* GetFirstHost();
+extern struct HOST_DATA* GetNextHostData();
