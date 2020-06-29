@@ -24,6 +24,11 @@
 #ifdef HAVE_MYSQL
 
 #include <mysql.h>
+#include <stdio.h>
+#include <string.h>
+
+extern struct HOST_DATA* GetFirstHost();
+extern struct HOST_DATA* GetNextHostData();
 
 /* 
  * IN: struct with ip traffic
@@ -61,7 +66,6 @@ int write_mysql(struct HOST_DATA* tmpData, MYSQL mysql_ptr)
 		direct_output=(tmpData->nPeerFlag==2)?tmpData->nOutTrafic:0;
 		local_input=(tmpData->nPeerFlag==3)?tmpData->nInTrafic:0;
 		local_output=(tmpData->nPeerFlag==3)?tmpData->nOutTrafic:0;
-
 
 		strncpy(spyip,intoa(tmpData->ipAddress),16);
 
