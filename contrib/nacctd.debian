@@ -1,9 +1,20 @@
 #! /bin/sh
+### BEGIN INIT INFO
+# Provides:          nacctd
+# Required-Start:    $remote_fs $network $syslog mysql
+# Required-Stop:     $remote_fs $network $syslog mysql
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Control nacctd
+# Description:       Control nacctd, a net accounting daemon
+### END INIT INFO
+
 # /etc/init.d/nacctd
 #
 # Written by Miquel van Smoorenburg <miquels@drinkel.ow.org>.
 # Modified for Debian GNU/Linux by Ian Murdock <imurdock@gnu.ai.mit.edu>.
 # Modified for netacct-mysql by Nikolay Hristov <geroy@stemo.bg>
+# Init fixes for Debian Jessie by Gerrit Boelz <gerrit.boelz@iap.de>
 
 set -e
 
