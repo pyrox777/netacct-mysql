@@ -23,7 +23,7 @@ CREATE TABLE if not exists `rrd` (
   `direct_output` int(20) NOT NULL default '0',
   `local_input` int(20) NOT NULL default '0',
   `local_output` int(20) NOT NULL default '0'
-) TYPE=MyISAM;
+);
 
 CREATE TABLE if not exists `traffic` (
   `id` int(11) unsigned NOT NULL auto_increment,
@@ -39,4 +39,4 @@ CREATE TABLE if not exists `traffic` (
   `local_output` int(20) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `ip` (`ip`,`time`)
-) TYPE=MyISAM;
+);
