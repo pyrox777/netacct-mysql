@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(netacct-mysql, 0.78, geroy@stemo.bg, netacct-mysql)
-AM_INIT_AUTOMAKE(netacct-mysql, 0.78)
+AC_INIT(netacct-mysql, 0.78.1, gerrit.boelz@iap.de, netacct-mysql, http://netacct-mysql.gabrovo.com/)
+AM_INIT_AUTOMAKE(netacct-mysql, 0.78.1)
 AC_CONFIG_SRCDIR([src/capture.c])
 # Checks for programs.
 AC_PROG_CC
@@ -159,7 +159,7 @@ if test "$with_mysql" != "no"; then
     fi
   else
 
-    for i in mysql lib lib/mysql; do
+    for i in mysql lib lib/x86_64-linux-gnu lib/mysql; do
       str="$MYSQL_DIR/$i/libmysqlclient.a"
       for j in `echo $str`; do
         if test -r $j; then
