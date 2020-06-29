@@ -5686,7 +5686,7 @@ echo "${ECHO_T}
     fi
   else
 
-    for i in mysql lib lib/mysql; do
+    for i in mysql lib lib/x86_64-linux-gnu lib/mysql; do
       str="$MYSQL_DIR/$i/libmysqlclient.a"
       for j in `echo $str`; do
         if test -r $j; then
