@@ -1,5 +1,5 @@
 [Unit]
-Description=A network traffic accounting daemon
+Description=nacctd - A network traffic accounting daemon
 Documentation=man:nacctd(8)
 Documentation=http://netacct-mysql.gabrovo.com/?section=info
 Documentation=https://github.com/pyrox777/netacct-mysql/
