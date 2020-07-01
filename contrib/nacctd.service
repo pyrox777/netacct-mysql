@@ -1,0 +1,24 @@
+[Unit]
+Description=A network traffic accounting daemon
+Documentation=man:nacctd(8)
+Documentation=http://netacct-mysql.gabrovo.com/?section=info
+Documentation=https://github.com/pyrox777/netacct-mysql/
+# We trust on the Alias of mariadb.service
+Wants=mysql.service
+After=network.target syslog.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/nacctd.pid
+ExecStart=/usr/local/sbin/nacctd
+# Please don't use HUP, there might be dragons
+ExecStop=/bin/kill $MAINPID
+KillSignal=SIGTERM
+PrivateTmp=true
+# We might want to run as a lower privileged user
+User=root
+Group=root
+Restart=on-failure
