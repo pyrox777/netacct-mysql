@@ -58,7 +58,7 @@
 /*#define PEERING_FILE "/etc/nacctpeering"*/
 
 #ifdef _LINUX_
-#define PID_FILE "/var/run/nacctd.pid"
+#define PID_FILE "/run/nacctd.pid"
 #else
 #define PID_FILE "/etc/nacctd.pid"
 #endif
