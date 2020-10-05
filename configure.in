@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT(netacct-mysql, 0.78.1, gerrit.boelz@iap.de, netacct-mysql, http://netacct-mysql.gabrovo.com/)
-AM_INIT_AUTOMAKE(netacct-mysql, 0.78.1)
+AC_INIT(netacct-mysql, 0.78.2, gerrit.boelz@iap.de, netacct-mysql, http://netacct-mysql.gabrovo.com/)
+AM_INIT_AUTOMAKE(netacct-mysql, 0.78.2)
 AC_CONFIG_SRCDIR([src/capture.c])
 # Checks for programs.
 AC_PROG_CC
@@ -31,8 +31,8 @@ AC_CHECK_FUNCS([alarm memmove putenv select strcasecmp strchr strcspn strdup str
 
 if test x"${prefix}" = x"NONE" ; then
  if test x"${sysconfdir}" = x"\${prefix}/etc"; then
-  AC_DEFINE_UNQUOTED(DEF_ACCTTAB, "${ac_default_prefix}/etc/naccttab", "config file")
-  AC_DEFINE_UNQUOTED(PEERING_FILE, "${ac_default_prefix}/etc/nacctpeering", "peering file")
+  AC_DEFINE_UNQUOTED(DEF_ACCTTAB, "/etc/naccttab", "config file")
+  AC_DEFINE_UNQUOTED(PEERING_FILE, "/etc/nacctpeering", "peering file")
  else
   AC_DEFINE_UNQUOTED(DEF_ACCTTAB, "${sysconfdir}/naccttab", "config file")
   AC_DEFINE_UNQUOTED(PEERING_FILE, "${sysconfdir}/nacctpeering", "peering file")
