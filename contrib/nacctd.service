@@ -12,7 +12,7 @@ WantedBy=multi-user.target
 
 [Service]
 Type=forking
-PIDFile=/var/run/nacctd.pid
+PIDFile=/run/nacctd.pid
 ExecStart=/usr/local/sbin/nacctd
 # Please don't use HUP, there might be dragons
 ExecStop=/bin/kill $MAINPID
