@@ -14,9 +14,9 @@ mysql_port 0			# mysql port, 0 if you are using a socket
 
 mysql_database netacct		# usually you don't need to change this
 
-pidfile  /var/run/nacctd.pid	# set pid file
-				# tis will help if you want to
-				# two (or more) nacctd on same machine
+pidfile  /run/nacctd.pid	# set pid file
+				# this will help if you want to run
+				# two (or more) nacctd on the same machine
 
 compactnet 62.73.77.0 255.255.255.0
 compactnet 192.168.1.0 255.255.255.0
